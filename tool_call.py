@@ -38,7 +38,7 @@ messages = [{"role": "user", "content": question}]
 # Step 2. The card: fill in the two empty strings.
 card = {"type": "function", "function": {
     "name": "get_lecture",
-    "description": "Return the number of the lecture provided by the user. For each number, fetch the lecture from the datasheet. For each lecture number, extract the description, tool used, session type and language used for teaching it. Convert all user input that should be a number into an integer. If you don't have an answer, return that the information is unavailable. Don't call if it's not about 100xEngineers.",                                                    # Use it when
+    "description": "Look up one lecture of the 100xEngineers Cohort 8 course by its number. Returns that lecture's date, title, session type and the tools it covers. Use it ONLY when the question is about a 100xEngineers Cohort 8 lecture. Do NOT use it for any other course, school or program (for example Harvard CS50, Coursera, or a university class), even if the question mentions a lecture number; answer those from your own knowledge instead.",                                                    # Use it when
     "parameters": {"type": "object",
                    "properties": {"number": {"type": "integer",
                                              "description": "The lecture number, from 1 to 19."}},         # It needs
@@ -61,3 +61,15 @@ reply = ask_model(messages, [card])
 print(reply["content"])
 
 # Step 5. Turn steps 3 and 4 into a loop.
+reply = ask_model(messages, [card])
+
+while reply.get("tool_calls"):
+    messages.append(reply)
+    for call in reply["tool_calls"]:
+        args = json.loads(call["function"]["arguments"])
+        print("The model asked for: get_lecture", args)
+        result = get_lecture(**args)
+        messages.append({"role": "tool", "tool_call_id": call["id"], "content": json.dumps(result)})
+    reply = ask_model(messages, [card])
+
+print("\n" + reply["content"])
