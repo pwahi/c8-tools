@@ -38,14 +38,14 @@ messages = [{"role": "user", "content": question}]
 # Step 2. The card: fill in the two empty strings.
 card = {"type": "function", "function": {
     "name": "get_lecture",
-    "description": "",                                                    # Use it when
+    "description": "Return the number of the lecture provided by the user. For each number, fetch the lecture from the datasheet. For each lecture number, extract the description, tool used, session type and language used for teaching it. Convert all user input that should be a number into an integer. If you don't have an answer, return that the information is unavailable. Don't call if it's not about 100xEngineers.",                                                    # Use it when
     "parameters": {"type": "object",
                    "properties": {"number": {"type": "integer",
-                                             "description": ""}},         # It needs
+                                             "description": "The lecture number, from 1 to 19."}},         # It needs
                    "required": ["number"]},
 }}
 
-reply = ask_model(messages)                 # Step 2: send the card too
+reply = ask_model(messages, [card])                 # Step 2: send the card too
 print(json.dumps(reply, indent=2, ensure_ascii=False))
 
 # Step 3. Run the request the model wrote.
