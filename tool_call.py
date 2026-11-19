@@ -49,7 +49,12 @@ reply = ask_model(messages, [card])                 # Step 2: send the card too
 print(json.dumps(reply, indent=2, ensure_ascii=False))
 
 # Step 3. Run the request the model wrote.
-
+all_requests = reply["tool_calls"]
+first_request = all_requests[0]
+arguments = json.loads(first_request["function"]["arguments"])
+number = arguments["number"]
+result = get_lecture(number)
+print(result)
 # Step 4. Hand the result back to the model and print its answer.
 
 # Step 5. Turn steps 3 and 4 into a loop.
